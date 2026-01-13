@@ -1,0 +1,8 @@
+# dockerhub.yaml
+# Authentication credentials for dockerhub
+
+imagePullSecret:
+  create: true
+  registry: "https://index.docker.io/v1"
+  username: "xxx"
+  password: "xxx"

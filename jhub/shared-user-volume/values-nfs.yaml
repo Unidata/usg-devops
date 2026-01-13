@@ -1,0 +1,17 @@
+fullnameOverride: ''
+nfsServer:
+  enableClientAllowlist: false
+quotaEnforcer:
+  enabled: true
+  config:
+    QuotaManager:
+      hard_quota: 10
+      uid: 1000
+      gid: 100
+      paths:
+      - /export
+prometheusExporter:
+  enabled: true
+openstack:
+  enabled: true
+  volumeId: "volumeId"
