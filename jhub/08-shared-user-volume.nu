@@ -16,16 +16,28 @@ let size = $shared_volume.home_size + $shared_volume.data_size
 print $"[ INFO ] Configuring jupyterhub-home-nfs volume of size ($size) GB"
 
 # ##############################################
-# Create an Openstack volume
+# Create an Openstack volume if one is not already designated in
+# ./shared-user-volume/values-nfs.yaml
 # ##############################################
-let volume_id = (openstack volume create --size $size $"($cluster.name)-nfs-homedirs" -f yaml | from yaml).id
 
-print $"[ INFO ] Openstack volume created with id: ($volume_id)"
+let values_nfs = $shared_volume.values_path
+
+# If a volumeId is already set, use that. Useful for when you must recreate a
+# cluster but want to keep the same openstack volume
+let volume_id = if (open $values_nfs | get openstack.volumeId) != null {
+  print $"[ INFO ] Openstack volumeId already set in ($values_nfs), this volume will be reused"
+  open $values_nfs | get openstack.volumeId
+} else {
+  print $"[ INFO ] Creating new Openstack volume"
+  (openstack volume create --size $size $"($cluster.name)-nfs-homedirs" -f yaml | from yaml).id
+}
+
+print $"[ INFO ] Using Openstack volume with ID ($volume_id)"
+
 
 # ##############################################
 # Deploy the In-Cluster NFS Server; configuring values-nfs.yaml
 # ##############################################
-let values_nfs = $shared_volume.values_path
 
 # Adjust values-nfs.yaml appropriately
 
@@ -50,7 +62,7 @@ let nfs_ip = kubectl get svc -n jupyterhub-home-nfs home-nfs -o yaml
 | get spec.clusterIP
 
 # ##############################################
-# Configure JHub to use shared home
+# Configure JHub namespace to use shared home
 # ##############################################
 
 print "[ INFO ] Configuring PV and PVC"
