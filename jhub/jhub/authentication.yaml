@@ -1,0 +1,9 @@
+# authentication.yaml
+# Secrets related to GitHub OAuth
+
+hub:
+  config:
+    GitHubOAuthenticator:
+      client_id: "xxx"
+      client_secret: "xxx"
+      oauth_callback_url: "xxx"

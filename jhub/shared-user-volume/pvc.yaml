@@ -1,0 +1,13 @@
+# PVC (namespace-scoped)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: home-nfs
+  namespace: jhub
+spec:
+  accessModes: [ReadWriteMany]
+  volumeName: jupyterhub-home-nfs
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 1Mi
