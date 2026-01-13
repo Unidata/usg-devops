@@ -78,13 +78,6 @@ let timeout = "300s"
 print $"[ INFO ] Initializing the shared directory with job timeout ($timeout)"
 
 kubectl apply --wait -f $job_path
-kubectl wait -n jhub --for=condition=complete --timeout=$timeout job/init-home-nfs-shared
+kubectl wait -n jhub --for=condition=complete $"--timeout=($timeout)" job/init-home-nfs-shared
 kubectl logs -n jhub job/init-home-nfs-shared
 kubectl delete -n jhub job/init-home-nfs-shared
-
-# Manually update the jhub secrets.yaml for now, until I can untangle a few things
-
-let jhub_values = $env.jupyterhub.cluster.values_path
-print $"[ INFO ] Manually configure storage in ($jhub_values)"
-
-# Manually run helm install to update jhub
