@@ -14,4 +14,4 @@ prometheusExporter:
   enabled: true
 openstack:
   enabled: true
-  volumeId: "volumeId"
+  volumeId: null
