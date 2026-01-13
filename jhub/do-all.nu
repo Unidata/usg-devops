@@ -15,7 +15,7 @@ nu 10-create-jhub-values.nu;
 nu 11-create-secrets.nu;
 
 source env.nu
-let jhub_values = $env.jupyterhub.cluster.values_path
+let jhub_values = $env.jupyterhub.jhub.values_path
 let authentication = $env.jupyterhub.authentication
 
 print $"[ INFO ] Review ($jhub_values), configure OAuth at ($authentication), then run `nu 12-install-jhub.nu`"

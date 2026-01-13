@@ -18,7 +18,7 @@ print $"[ INFO ] Creating cluster: ($cluster.name)"
     --node-count $cluster.worker.count
     --master-flavor $cluster.master.flavor
     --flavor $cluster.worker.flavor
-    --labels auto_scaling_enabled=$cluster.autoscaling
+    --labels $"auto_scaling_enabled=($cluster.autoscaling)"
     --labels min_node_count=1
     --labels max_node_count=1
     --fixed-network auto_allocated_network
@@ -46,6 +46,6 @@ while not $ready and ((date now) - $start) < $timeout {
 }
 
 if not $ready {
-  print $"[ [ ERROR ] Failed to create healthy cluster in ($timeout)"
+  print $"[ ERROR ] Failed to create healthy cluster in ($timeout)"
   exit 1
 }

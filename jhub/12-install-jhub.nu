@@ -1,5 +1,5 @@
 source ./env.nu
-let values = $env.jupyterhub.cluster.values_path
+let values = $env.jupyterhub.jhub.values_path
 let dockerhub = $env.jupyterhub.dockerhub
 let secrets = $env.jupyterhub.secrets
 let authentication = $env.jupyterhub.authentication

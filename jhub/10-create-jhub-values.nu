@@ -88,8 +88,8 @@ let extraContainers = [{
   volume_mounts: $volume_mounts,
   ports: [{containerPort: 6080, name: "novnc" }]
   resources: {
-    requests: { cpu: 6, memory: "21Gi" }
-    limits: { cpu: 6, memory: "21Gi" }
+    requests: { cpu: 6, memory: "21G" }
+    limits: { cpu: 6, memory: "21G" }
   }
 }]
 
@@ -98,7 +98,7 @@ let profileList = {
     display_name: "Low Power"
     description: "Up to 1 CPU, 4GiB RAM"
     kubespawner_override: {
-      mem_guarantee: 2.875Gi
+      mem_guarantee: 2.875G
       mem_limit: 4G
       cpu_guarantee: .625 
       cpu_limit: 1
@@ -109,8 +109,8 @@ let profileList = {
     display_name: "Standard"
     description: "Up to 2 CPU, 8GiB RAM"
     kubespawner_override: {
-      mem_guarantee: 6.25Gi
-      mem_limit: 8Gi
+      mem_guarantee: 6.25G
+      mem_limit: 8G
       cpu_guarantee: 1.5 
       cpu_limit: 2
       node_selector: { capi.stackhpc.com/node-group: mediums }
@@ -120,8 +120,8 @@ let profileList = {
     display_name: "Medium Power"
     description: "Up to 4 CPU, 16GiB RAM"
     kubespawner_override: {
-      mem_guarantee: 13Gi
-      mem_limit: 16Gi
+      mem_guarantee: 13G
+      mem_limit: 16G
       cpu_guarantee: 3.25
       cpu_limit: 4
       node_selector: { capi.stackhpc.com/node-group: mediums }
@@ -131,7 +131,7 @@ let profileList = {
     display_name: "High Power"
     description: "Up to 8 CPU, 32GiB RAM"
     kubespawner_override: {
-      mem_guarantee: 26.5Gi
+      mem_guarantee: 26.5G
       mem_limit: 32G
       cpu_guarantee: 7 
       cpu_limit: 8
@@ -142,8 +142,8 @@ let profileList = {
     display_name: "Virtual Desktop: Run IDV & CAVE"
     description: "Jupyter: 3 GB of memory; 1 vCPUS, IDV/CAVE: 21 GB of memory; 6 vCPUS"
     kubespawner_override: {
-      mem_guarantee: 3Gi
-      mem_limit: 3Gi
+      mem_guarantee: 3G
+      mem_limit: 3G
       cpu_guarantee: 1 
       cpu_limit: 1
       node_selector: { capi.stackhpc.com/node-group: mediums }
@@ -165,7 +165,9 @@ let gitpuller = $git_repos
   }
 
 let commands = [
-  "bash -c \\"
+  "bash"
+  "-c"
+  ([
   # To keep appropriate permissions on ssh keys
   'dir="/home/jovyan/.ssh"; [ -d $dir ] && { chmod 700 $dir && chmod -f 600 $dir/* && chmod -f 644 $dir/*.pub; } || true;'
   # Useful files
@@ -183,7 +185,8 @@ let commands = [
   # Symlinks
   '[ -d "/share" ] && [ ! -L ~/share ] && ln -s /share ~/share || true;'
   ''
-] | str join "\n"
+  ] | str join "\n")
+]
 
 
 ####################
@@ -252,7 +255,7 @@ let singleuser = {
   nodeSelector: { "capi.stackhpc.com/node-group": mediums },
   extraContainers: ($extraContainers | upsert resources {
       requests: { cpu: 250m, memory: "512Mi" }
-      limits: { cpu: 1, memory: "1Gi" }
+      limits: { cpu: 1, memory: "1G" }
   }),
   extraEnv: {
     "NBGITPULLER_DEPTH": "0"

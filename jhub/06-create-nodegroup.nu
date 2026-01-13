@@ -15,7 +15,7 @@ print $"[ INFO ] Creating nodegroup ($nodegroup.name)"
 (openstack coe nodegroup create $cluster_name $nodegroup.name
   --node-count 1
   --flavor $nodegroup.flavor
-  --labels auto_scaling_enabled=$nodegroup.autoscaling
+  --labels $"auto_scaling_enabled=($nodegroup.autoscaling)"
   --min-nodes 1
   --max-nodes $nodegroup.max_nodes
 )

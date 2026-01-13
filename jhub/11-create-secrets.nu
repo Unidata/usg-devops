@@ -9,6 +9,7 @@ open $env.jupyterhub.secrets
 | save -f $env.jupyterhub.secrets
 
 # Add Oauth callback URL in authentication.yaml
-let domain = $"($env.jupyterhub.cluster.name).$($env.jupyterhub.zone | str trim -r -c ".")"
+let domain = $"($env.jupyterhub.cluster.name).($env.jupyterhub.zone | str trim -r -c ".")"
 open $env.jupyterhub.authentication
 | upsert hub.config.GitHubOAuthenticator.oauth_callback_url $"https://($domain):443/oauth_callback"
+| save -f $env.jupyterhub.authentication
