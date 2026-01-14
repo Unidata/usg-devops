@@ -13,6 +13,7 @@ let namespace = "jhub"
   --version 4.2.0
   --debug
   --wait
+  --timeout 10m
   --values $values
   --values $authentication
   --values $dockerhub
