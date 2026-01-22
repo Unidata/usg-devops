@@ -22,7 +22,7 @@ $env.jupyterhub.zone = "ees220002.projects.jetstream-cloud.org."
 
 $env.jupyterhub.shared_volume = {
   user_quota: 10, # Storage per user
-  home_size: 300, # Total size of home dir volume, accounting for all users; In GB
+  home_size: 300, # Total size of home dir volume, accounting for all users; In GB; if this is left null, users will not have persistent storage
   data_size: null, # Total size of /share mount, in GB; if this is left null, no additional storage is allocated for shared data
   values_path: "./shared-user-volume/values-nfs.yaml",
   pv_path: "./shared-user-volume/pv.yaml",
