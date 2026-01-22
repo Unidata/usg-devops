@@ -43,6 +43,8 @@ let user_placeholders = $jhub.user_placeholders
 let desired_profiles = $jhub.desired_profiles
 let default_profile = $jhub.default_profile
 
+# `Persistent storage per user` is enabled if a home_size value is set
+let persistent_storage_enabled = $env.jupyterhub.shared_volume.home_size != null
 # `/share` mount is enabled if a data_size value is set
 let shared_data_enabled = $env.jupyterhub.shared_volume.data_size != null
 
@@ -52,25 +54,28 @@ let shared_data_enabled = $env.jupyterhub.shared_volume.data_size != null
 
 let domain = $"($cluster_name).($zone | str trim -r -c ".")"
 
-let volumes = [{
-  name: "home-nfs",
-  persistentVolumeClaim: {claimName: "home-nfs"},
-}]
+let volumes = if $persistent_storage_enabled or $shared_data_enabled {
+  [{
+    name: "home-nfs",
+    persistentVolumeClaim: {claimName: "home-nfs"},
+  }]
+} else { [] }
 
-let volume_mounts = [{
+let volume_mounts = []
+| if $persistent_storage_enabled {
+  $in | append {
     name: "home-nfs",
     mountPath: "/home/jovyan",
     subPath: "{username}"
-}]
+  }
+} else { $in }
 | if $shared_data_enabled {
   $in | append {
     name: "home-nfs",
     mountPath: "/share",
     subPath: "_shared"
   } 
-} else {
-  $in
-}
+} else { $in }
 
 let resources = {
   storage: {
