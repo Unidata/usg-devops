@@ -8,6 +8,7 @@ $env.jupyterhub.cluster = {
   worker: {count: 1, flavor: "m3.quad"},
   autoscaling: "true",
   name: null, # SET ME!
+  existing_ip: null # If set to something other than "null", attempt to use this IP when creating the ingress loadBalancer service
 }
 
 $env.jupyterhub.nodegroup = {

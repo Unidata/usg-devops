@@ -1,6 +1,15 @@
 # TODO
 # - [ ] Move current logic to a main function, I guess
 
+source ./env.nu
+
+let existing_ip = $env.jupyterhub.cluster.existing_ip
+
+let existing_ip_flag = if $existing_ip != null {
+  print $"[ INFO ] Using existing IP address for load balancer: ($existing_ip)"
+  ["--set" $"controller.service.loadBalancerIP=($existing_ip)"]
+} else { "" }
+
 print "[ INFO ] Installing an ingress resource"
 
 (helm upgrade --install ingress-nginx ingress-nginx
@@ -8,6 +17,7 @@ print "[ INFO ] Installing an ingress resource"
   --namespace ingress-nginx --create-namespace
   --set 'controller.nodeSelector.capi\.stackhpc\.com/node-group=default-worker'
   --wait
+  ...$existing_ip_flag
 )
 | complete
 | if $in.exit_code != 0 {
