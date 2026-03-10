@@ -42,26 +42,24 @@ jobs:
 
           exit "$bad"
 
-      # generating false positives. May revisit
-      #
-      # - name: Fail on likely-binary files
-      #   run: |
-      #     set -euo pipefail
+      - name: Fail on likely-binary files
+        run: |
+          set -euo pipefail
 
-      #     base="${{ github.event.pull_request.base.sha }}"
-      #     head="${{ github.sha }}"
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.sha }}"
 
-      #     mapfile -t files < <(git diff --name-only --diff-filter=AM "$base" "$head")
+          mapfile -t files < <(git diff --name-only --diff-filter=AM "$base" "$head")
 
-      #     bad=0
-      #     for f in "${files[@]}"; do
-      #       [ -f "$f" ] || continue
+          bad=0
+          for f in "${files[@]}"; do
+            [ -f "$f" ] || continue
 
-      #       # Heuristic: if file contains NUL bytes, treat as binary
-      #       if LC_ALL=C grep -qU $'\x00' "$f"; then
-      #         echo "::error file=$f::Likely binary file (contains NUL byte)."
-      #         bad=1
-      #       fi
-      #     done
+            # perl -0777 slurps file; exit 0 if a NUL byte (\x00) is present
+            if perl -0777 -ne 'exit(/\x00/ ? 0 : 1)' "$f"; then
+              echo "::error file=$f::Likely binary file (contains NUL byte)."
+              bad=1
+            fi
+          done
 
-      #     exit "$bad"
+          exit "$bad"
