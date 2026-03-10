@@ -8,7 +8,7 @@ let existing_ip = $env.jupyterhub.cluster.existing_ip
 let existing_ip_flag = if $existing_ip != null {
   print $"[ INFO ] Using existing IP address for load balancer: ($existing_ip)"
   ["--set" $"controller.service.loadBalancerIP=($existing_ip)"]
-} else { "" }
+} else { [] }
 
 print "[ INFO ] Installing an ingress resource"
 
