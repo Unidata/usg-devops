@@ -10,7 +10,7 @@ let namespace = "jhub"
 (helm upgrade --install $release jupyterhub/jupyterhub
   --namespace $namespace
   --create-namespace
-  --version 4.2.0
+  --version 4.3.3
   --debug
   --wait
   --timeout 10m
