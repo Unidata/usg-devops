@@ -39,7 +39,10 @@ let image_name = $jhub.image_name | default $"unidata/($env.jupyterhub.cluster.n
 let image_tag = $jhub.image_tag
 let git_repos = $jhub.git_repos
 
-let user_placeholders = $jhub.user_placeholders
+let user_placeholders = if ($jhub.user_placeholders | describe) != nothing {
+  $jhub.user_placeholders
+} else { 0 }
+
 let desired_profiles = $jhub.desired_profiles
 let default_profile = $jhub.default_profile
 
