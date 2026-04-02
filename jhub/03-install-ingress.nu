@@ -3,21 +3,20 @@
 
 source ./env.nu
 
-let existing_ip = $env.jupyterhub.cluster.existing_ip
+print "[ INFO ] Adding traefik repo"
 
-let existing_ip_flag = if $existing_ip != null {
-  print $"[ INFO ] Using existing IP address for load balancer: ($existing_ip)"
-  ["--set" $"controller.service.loadBalancerIP=($existing_ip)"]
-} else { [] }
+helm repo add traefik https://traefik.github.io/charts;
+helm repo update
 
-print "[ INFO ] Installing an ingress resource"
+print "[ INFO ] Installing traefik"
 
-(helm upgrade --install ingress-nginx ingress-nginx
-  --repo https://kubernetes.github.io/ingress-nginx
-  --namespace ingress-nginx --create-namespace
-  --set 'controller.nodeSelector.capi\.stackhpc\.com/node-group=default-worker'
-  --wait
-  ...$existing_ip_flag
+(
+helm upgrade --install traefik traefik/traefik
+  --namespace ingress-traefik --create-namespace
+  --set 'api.dashboard=false'
+  --set 'providers.kubernetesCRD.enabled=false'
+  --set 'logs.access.enabled=true'
+  --set 'nodeSelector.capi\.stackhpc\.com/node-group=default-worker'
 )
 | complete
 | if $in.exit_code != 0 {
@@ -26,7 +25,7 @@ print "[ INFO ] Installing an ingress resource"
   exit 1
 }
 
-let ingress_ip = kubectl get svc -n ingress-nginx
+let ingress_ip = kubectl get svc -n ingress-traefik
 | detect columns
 | get 0.EXTERNAL-IP
 
