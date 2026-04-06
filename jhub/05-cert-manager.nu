@@ -48,12 +48,8 @@ print "[ INFO ] Applying cert-manager helm chart"
   exit 1
   }
 
-let issuer = "~/jupyterhub-deploy-kubernetes-jetstream/setup_https/https_cluster_issuer.yml"
+let issuer = "./jhub/https_cluster_issuer.yaml"
 | path expand
-
-open $issuer
-| upsert spec.acme.email "support-gateway@unidata.ucar.edu"
-| save -f $issuer
 
 print "[ INFO ] Applying cluster issuer manifest"
 kubectl apply -f $issuer --wait

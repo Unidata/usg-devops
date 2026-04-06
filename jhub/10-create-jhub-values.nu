@@ -225,9 +225,9 @@ let hub = {
 let ingress = {
   enabled: true,
   annotations: {
-    "kubernetes.io/ingress.class": "nginx",
+    "kubernetes.io/ingress.class": "traefik",
     "cert-manager.io/cluster-issuer": "letsencrypt",
-    "nginx.ingress.kubernetes.io/proxy-body-size": "500m"
+    "traefik.ingress.kubernetes.io/middlewares.limit.buffering.maxRequestBodyBytes": "500000000"
   },
   hosts: [ $domain ],
   tls: [{

@@ -17,7 +17,7 @@ let cluster_name = $env.jupyterhub.cluster.name
 # Trim the trailing "." from the zone
 let dns = $"($cluster_name).($zone | str trim -r -c ".")"
 
-let ip = kubectl get svc -n ingress-nginx
+let ip = kubectl get svc -n ingress-traefik
 | detect columns
 | get 0.EXTERNAL-IP
 
