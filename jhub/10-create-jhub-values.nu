@@ -222,6 +222,12 @@ let hub = {
   }
 }
 
+let proxy = {
+  service: {
+    type: "ClusterIP"
+  }
+}
+
 let ingress = {
   enabled: true,
   annotations: {
@@ -287,6 +293,7 @@ let singleuser = {
 
 {
   hub: $hub,
+  proxy: $proxy
   ingress: $ingress,
   scheduling: $scheduling,
   singleuser: $singleuser
