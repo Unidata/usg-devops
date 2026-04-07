@@ -44,6 +44,11 @@ print $"[ INFO ] Using Openstack volume with ID ($volume_id)"
 open $values_nfs
 | upsert quotaEnforcer.config.QuotaManager.hard_quota $shared_volume.user_quota
 | upsert openstack.volumeId $volume_id
+| if $shared_volume.data_size != null {
+    upsert quotaEnforcer.config.QuotaManager.quota_overrides {
+      "_shared": $shared_volume.data_size
+    }
+  } else { $in }
 | save -f $values_nfs
 
 print "[ INFO ] Deploying helm chart"
