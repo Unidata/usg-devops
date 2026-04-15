@@ -1,6 +1,6 @@
 from os import system
+from subprocess import run
 from os.path import isfile
-from time import sleep
 
 import argparse
 
@@ -14,28 +14,27 @@ from matplotlib import pyplot as plt
 from usage_monitoring_config import *
 
 def create_os_token(token_file):
-    return_val = system(f'openstack token issue -f json > {token_file}')
-    # Sleep to give openstack the time to return the token
-    sleep(5)
-    if return_val != 0:
-        raise
+    token = run(
+        ['openstack', 'token', 'issue', '-f', 'json'],
+        capture_output=True,
+        check=True
+    )
+    with open(token_file, 'w') as f:
+        f.write(token.stdout.decode())
+
+def token_expired(token_file):
+    with open(token_file, 'r') as f:
+        expires_str = json.load(f)['expires']
+        date_format = '%Y-%m-%dT%H:%M:%S+0000'
+        expire = datetime.strptime(expires_str, date_format).timestamp()
+        now = datetime.now(UTC).timestamp()
+        expire < now    
 
 def get_os_token(token_file='/tmp/os-token.json', force_new_token=False):
-    if isfile(token_file) and not force_new_token:
-        with open(token_file, 'r') as f:
-            f_json = json.load(f)
-            date_format = '%Y-%m-%dT%H:%M:%S+0000'
-            expires_str = f_json['expires']
-            expire = datetime.strptime(expires_str, date_format).timestamp()
-            now = datetime.now(UTC).timestamp()
-            if expire > now:
-                return f_json['id']
-            else:
-                #print("Token expired. Creating new token", file=stderr)
-                create_os_token(token_file)
-    else:
+    if not isfile(token_file) or force_new_token or token_expired(token_file):
         create_os_token(token_file)
-        return get_os_token(token_file)
+    with open(token_file, 'r') as f:
+        json.load(f)['id']
 
 def query_accounting_api(token):
     url = 'https://js2.jetstream-cloud.org:9001'
