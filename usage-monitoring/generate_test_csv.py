@@ -2,7 +2,7 @@ import csv
 
 from datetime import datetime, timedelta
 
-import plotly.express as px
+from matplotlib import pyplot as plt
 
 from usage_monitoring_config import *
 
@@ -86,8 +86,8 @@ sus_used = [ total_sus - sus_rem for sus_rem in sus_remaining ]
 # Visualize?
 viz = False
 if viz:
-    fig = px.scatter(x=dates, y=sus_used)
-    fig.show()
+    plt.scatter(x=dates, y=sus_used)
+    plt.show()
 
 #############################################
 # Export test data to csv
