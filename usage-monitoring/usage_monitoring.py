@@ -119,9 +119,10 @@ def get_usage_rates(data,days):
     date1 = date2 - delta
     idate1 = 0
 
-    # Loop through timestamps to find the index of minimum difference
-    for i,ts in enumerate(timestamps):
-        # Get the entry that's closest to date1, i.e. "days" number of days before date2
+    # Get the entry that's closest to date1, i.e. "days" number of days before date2
+    # The strategy is to take the difference between the nominal date1 timestamp and each timestamp, then choose the minimum
+    # We leave out timestamps[-1] (date2) to ensure date1 != date2, resulting in a NaN when rates are calculated
+    for i,ts in enumerate(timestamps[:-2]):
         if abs(date1 - ts) < dt1:
             dt1 = date1 - ts
             idate1 = i
@@ -130,10 +131,10 @@ def get_usage_rates(data,days):
     rate_second = (sus_used[idate2] - sus_used[idate1])/(timestamps[idate2] - timestamps[idate1])
     rate_hour = 3600*rate_second
     rate_day = 24*rate_hour
-    return { 'rate_second': rate_second,
+    return {'rate_second': rate_second,
             'rate_hour': rate_hour,
             'rate_day': rate_day,
-            'rate_start_date': datetime.fromtimestamp(date1),
+            'rate_start_date': datetime.fromtimestamp(timestamps[idate1]),
             'rate_end_date': datetime.fromtimestamp(date2)}
 
 
