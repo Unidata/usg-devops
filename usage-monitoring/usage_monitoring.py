@@ -1,3 +1,5 @@
+#! /usr/bin/env conda run -n usage-monitoring python
+
 from os import system
 from subprocess import run
 from os.path import isfile, expanduser
