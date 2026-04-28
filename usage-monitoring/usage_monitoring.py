@@ -1,6 +1,6 @@
 from os import system
 from subprocess import run
-from os.path import isfile
+from os.path import isfile, expanduser
 
 import argparse
 
@@ -11,7 +11,13 @@ import pandas as pd
 import requests
 from matplotlib import pyplot as plt
 
-from usage_monitoring_config import *
+def load_config(config_path):
+    try:
+        with open(expanduser(config_path)) as c:
+            return json.load(c)
+    except FileNotFoundError:
+        print(f'File {config_path} not found! Exiting ...')
+        exit(1)
 
 def create_os_token(token_file):
     token = run(
@@ -19,32 +25,36 @@ def create_os_token(token_file):
         capture_output=True,
         check=True
     )
-    with open(token_file, 'w') as f:
+    with open(expanduser(token_file), 'w') as f:
         f.write(token.stdout.decode())
 
 def token_expired(token_file):
-    with open(token_file, 'r') as f:
+    with open(expanduser(token_file), 'r') as f:
         expires_str = json.load(f)['expires']
         date_format = '%Y-%m-%dT%H:%M:%S+0000'
         expire = datetime.strptime(expires_str, date_format).timestamp()
         now = datetime.now(UTC).timestamp()
         expire < now    
 
-def get_os_token(token_file='/tmp/os-token.json', force_new_token=False):
-    if not isfile(token_file) or force_new_token or token_expired(token_file):
+def get_os_token(token_file, force_new_token=False):
+    if not isfile(expanduser(token_file)) or force_new_token or token_expired(token_file):
         create_os_token(token_file)
-    with open(token_file, 'r') as f:
-        json.load(f)['id']
+    with open(expanduser(token_file), 'r') as f:
+        return json.load(f)['id']
 
 def query_accounting_api(token):
     url = 'https://js2.jetstream-cloud.org:9001'
     headers = { 'X-Auth-Token': f'{token}' }
     response = requests.get(url, headers=headers)
-    response.raise_for_status()
+    try:
+        response.raise_for_status()
+    except Exception as ex:
+        print(ex)
+        exit(1)
     query = json.loads(response.text)
     return query
 
-def get_js2_resources(query):
+def get_js2_resources(query,allocation_resources):
     now = datetime.now()
     date_format = '%Y-%m-%d'
     all_resources = [ 
@@ -72,6 +82,7 @@ def write_resource_csv(resources, data_file):
         ]
     now = datetime.now(UTC).timestamp()
 
+    data_file = expanduser(data_file)
     # Create file and write headers if it doesn't exist
     if not isfile(data_file):
         with open(data_file, 'w') as f:
@@ -244,7 +255,7 @@ def usage_analysis(data,days_prior):
 
 def generate_usage_plot(resources, analyses):
     fig, ax = plt.subplots()
-    for resource_type in allocation_resources:
+    for resource_type in c['allocation_resources']:
         data = get_data_by_resource(resources, resource_type)
 
         timestamps = pd.array(data['timestamp'])
@@ -258,43 +269,46 @@ def generate_usage_plot(resources, analyses):
     plt.show()
     return 0
 
-def main(data_file):
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--force-new-token', help='Force the creation of a new openstack token before query', action='store_true')
-    parser.add_argument('-w', '--write', help=f'Query Jetstream2 for new allocation data and write to data file: {data_file}', action='store_true')
-    parser.add_argument('-c', '--dump-csv', help=f'Dump the data from {data_file} in csv format', action='store_true')
-    parser.add_argument('-j', '--dump-json', help=f'Dump the data from {data_file} in json format', action='store_true')
+    parser.add_argument('-w', '--write', help='Query Jetstream2 for new allocation data and write to data file', action='store_true')
+    parser.add_argument('-c', '--dump-csv', help='Dump the data from data_file in csv format', action='store_true')
+    parser.add_argument('-j', '--dump-json', help='Dump the data from data_file in json format', action='store_true')
     parser.add_argument('-p', '--plot', help='Generate an interactive plot of SU usage data', action='store_true')
     parser.add_argument('-a', '--analysis-days', help='Days prior for which to perform an analysis', action='extend', nargs='+', type=int)
     parser.add_argument('-d', '--devel', help='Use test_csv_file for development work', action='store_true')
+    parser.add_argument('--config', help='Configuration file path', type=str, default="~/.config/usage-monitoring/config.json")
     args = vars(parser.parse_args())
+
+    c = load_config(args['config'])
 
     if not any([ args[key] for key in args.keys() ]):
         parser.parse_args(['--help'])
 
     if args['devel']:
-        data_file = test_csv_file
+        c['data_file'] = c['test_csv_file']
 
     if args['write']:
-        token = get_os_token(token_file,force_new_token=args['force_new_token'])
+        token = get_os_token(c['token_file'],force_new_token=args['force_new_token'])
         query = query_accounting_api(token)
-        resources = get_js2_resources(query)
-        write_resource_csv(resources, data_file)
+        resources = get_js2_resources(query,c['allocation_resources'])
+        write_resource_csv(resources, c['data_file'])
 
     if args['dump_csv']:
-        system(f'cat {data_file}')
+        system(f'cat {c['data_file']}')
 
     if args['dump_json']:
-        resources = read_resource_csv(data_file)
+        resources = read_resource_csv(c['data_file'])
         print(json.dumps(resources, indent=2))
 
     if args['analysis_days']:
         # Get resources
-        resources = read_resource_csv(data_file)
+        resources = read_resource_csv(c['data_file'])
 
         analyses = []
         # Loop over resources to get each type of data found in allocation_resources
-        for resource_type in allocation_resources:
+        for resource_type in c['allocation_resources']:
             data = get_data_by_resource(resources, resource_type)
             # Perform analysis (usage rates, "forecast", )
             analyses.append(usage_analysis(data,args['analysis_days']))
@@ -304,8 +318,8 @@ def main(data_file):
     if args['plot']:
         if 'analyses' not in locals():
             analyses = None
-        resources = read_resource_csv(data_file)
+        resources = read_resource_csv(c['data_file'])
         generate_usage_plot(resources, analyses)
 
 if __name__ == "__main__":
-    main(data_file)
+    main()
