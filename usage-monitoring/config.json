@@ -1,0 +1,10 @@
+{
+  "token_file": "~/.config/usage-monitoring/os-token.json",
+  "allocation_resources": [
+    "jetstream2.indiana.xsede.org",
+    "jetstream2-gpu.indiana.xsede.org",
+    "jetstream2-lm.indiana.xsede.org"
+  ],
+  "data_file": "~/usage_monitoring.csv",
+  "test_csv_file": "/tmp/usage_monitoring_test.csv"
+}
