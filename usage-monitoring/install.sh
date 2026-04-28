@@ -7,5 +7,5 @@ CONFIG_PATH=$HOME/.config/usage-monitoring/
 
 mkdir -p $INSTALL_PATH $CONFIG_PATH
 
-ln -s ./usage_monitoring.py $INSTALL_PATH
-ln -s ./usage_monitoring_config.py $CONFIG_PATH
+ln -s $PWD/usage_monitoring.py $INSTALL_PATH/usage_monitoring.py
+ln -s $PWD/config.json $CONFIG_PATH/config.json
