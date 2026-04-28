@@ -300,7 +300,7 @@ def main():
 
     if args['dump_json']:
         resources = read_resource_csv(c['data_file'])
-        print(json.dumps(resources, indent=2))
+        print(resources.to_json(orient='records', indent=2))
 
     if args['analysis_days']:
         # Get resources
