@@ -255,10 +255,13 @@ def usage_analysis(data,days_prior):
 
     return analysis
 
-def generate_usage_plot(resources, analyses):
+def generate_usage_plot(resources, analyses, allocation_resources):
     fig, ax = plt.subplots()
-    for resource_type in c['allocation_resources']:
+    for resource_type in allocation_resources:
         data = get_data_by_resource(resources, resource_type)
+        if data.empty:
+            print(f'No available data for {resource_type}')
+            continue
 
         timestamps = pd.array(data['timestamp'])
         dates = [ datetime.fromtimestamp(ts) for ts in timestamps ]
@@ -312,6 +315,9 @@ def main():
         # Loop over resources to get each type of data found in allocation_resources
         for resource_type in c['allocation_resources']:
             data = get_data_by_resource(resources, resource_type)
+            if data.empty:
+                print(f'No available data for {resource_type}')
+                continue
             # Perform analysis (usage rates, "forecast", )
             analyses.append(usage_analysis(data,args['analysis_days']))
 
@@ -321,7 +327,7 @@ def main():
         if 'analyses' not in locals():
             analyses = None
         resources = read_resource_csv(c['data_file'])
-        generate_usage_plot(resources, analyses)
+        generate_usage_plot(resources, analyses, c['allocation_resources'])
 
 if __name__ == "__main__":
     main()
