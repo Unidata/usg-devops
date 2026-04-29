@@ -2,6 +2,7 @@
 
 from subprocess import run, CalledProcessError
 from os.path import isfile, expanduser
+from sys import stderr
 
 import argparse
 
@@ -21,7 +22,7 @@ def load_config(config_path):
             c['test_csv_file'] = expanduser(c['test_csv_file'])
             return c
     except FileNotFoundError:
-        print(f'File {config_path} not found! Exiting ...')
+        print(f'File {config_path} not found! Exiting ...', file=stderr)
         exit(1)
 
 def create_os_token(token_file):
@@ -36,7 +37,8 @@ def create_os_token(token_file):
             f'{ex}\n',
             f'STDOUT: {ex.stdout.decode()}\n',
             f'STDERR: {ex.stderr.decode()}\n'
-            'It is possible that a valid openrc.sh was not sourced. Exiting ...'
+            'It is possible that a valid openrc.sh was not sourced. Exiting ...',
+            file=stderr
         )
         exit(1)
     with open(token_file, 'w') as f:
@@ -63,7 +65,7 @@ def query_accounting_api(token):
     try:
         response.raise_for_status()
     except Exception as ex:
-        print(ex)
+        print(ex, file=stderr)
         exit(1)
     query = json.loads(response.text)
     return query
@@ -274,7 +276,7 @@ def generate_usage_plot(resources, analyses, allocation_resources):
     for resource_type in allocation_resources:
         data = get_data_by_resource(resources, resource_type)
         if data.empty:
-            print(f'No available data for {resource_type}')
+            print(f'No available data for {resource_type}', file=stderr)
             continue
 
         timestamps = pd.array(data['timestamp'])
@@ -333,10 +335,10 @@ def main():
         for resource_type in c['allocation_resources']:
             data = get_data_by_resource(resources, resource_type)
             if data.empty:
-                print(f'No available data for {resource_type}. Skipping ...')
+                print(f'No available data for {resource_type}. Skipping ...', file=stderr)
                 continue
             if len(data) < 2:
-                print(f'Not enough data for {resource_type}: len(data) = {len(data)}. Skipping ...')
+                print(f'Not enough data for {resource_type}: len(data) = {len(data)}. Skipping ...', file=stderr)
             # Perform analysis (usage rates, "forecast", )
             analyses.append(usage_analysis(data,args['analysis_days']))
 
