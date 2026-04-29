@@ -1,6 +1,6 @@
 #! /usr/bin/env -S conda run -n usage-monitoring python
 
-from subprocess import run
+from subprocess import run, CalledProcessError
 from os.path import isfile, expanduser
 
 import argparse
@@ -25,11 +25,20 @@ def load_config(config_path):
         exit(1)
 
 def create_os_token(token_file):
-    token = run(
-        ['openstack', 'token', 'issue', '-f', 'json'],
-        capture_output=True,
-        check=True
-    )
+    try:
+        token = run(
+            ['openstack', 'token', 'issue', '-f', 'json'],
+            capture_output=True,
+            check=True
+        )
+    except CalledProcessError as ex:
+        print(
+            f'{ex}\n',
+            f'STDOUT: {ex.stdout.decode()}\n',
+            f'STDERR: {ex.stderr.decode()}\n'
+            'It is possible that a valid openrc.sh was not sourced. Exiting ...'
+        )
+        exit(1)
     with open(token_file, 'w') as f:
         f.write(token.stdout.decode())
 
