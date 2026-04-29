@@ -1,6 +1,5 @@
 #! /usr/bin/env conda run -n usage-monitoring python
 
-from os import system
 from subprocess import run
 from os.path import isfile, expanduser
 
@@ -304,7 +303,10 @@ def main():
         write_resource_csv(resources, c['data_file'])
 
     if args['dump_csv']:
-        system(f'cat {c['data_file']}')
+        dump = run(
+            ['cat', f'{expanduser(c['data_file'])}'],
+            check=True
+        )
 
     if args['dump_json']:
         resources = read_resource_csv(c['data_file'])
