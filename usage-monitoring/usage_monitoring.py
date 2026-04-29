@@ -319,8 +319,10 @@ def main():
         for resource_type in c['allocation_resources']:
             data = get_data_by_resource(resources, resource_type)
             if data.empty:
-                print(f'No available data for {resource_type}')
+                print(f'No available data for {resource_type}. Skipping ...')
                 continue
+            if len(data) < 2:
+                print(f'Not enough data for {resource_type}: len(data) = {len(data)}. Skipping ...')
             # Perform analysis (usage rates, "forecast", )
             analyses.append(usage_analysis(data,args['analysis_days']))
 
