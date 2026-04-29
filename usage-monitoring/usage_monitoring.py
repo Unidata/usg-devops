@@ -14,8 +14,12 @@ from matplotlib import pyplot as plt
 
 def load_config(config_path):
     try:
-        with open(expanduser(config_path)) as c:
-            return json.load(c)
+        with open(expanduser(config_path)) as config:
+            c = json.load(config)
+            c['token_file'] = expanduser(c['token_file'])
+            c['data_file'] = expanduser(c['data_file'])
+            c['test_csv_file'] = expanduser(c['test_csv_file'])
+            return c
     except FileNotFoundError:
         print(f'File {config_path} not found! Exiting ...')
         exit(1)
@@ -26,11 +30,11 @@ def create_os_token(token_file):
         capture_output=True,
         check=True
     )
-    with open(expanduser(token_file), 'w') as f:
+    with open(token_file, 'w') as f:
         f.write(token.stdout.decode())
 
 def token_expired(token_file):
-    with open(expanduser(token_file), 'r') as f:
+    with open(token_file, 'r') as f:
         expires_str = json.load(f)['expires']
         date_format = '%Y-%m-%dT%H:%M:%S+0000'
         expire = datetime.strptime(expires_str, date_format).timestamp()
@@ -38,9 +42,9 @@ def token_expired(token_file):
         expire < now    
 
 def get_os_token(token_file, force_new_token=False):
-    if not isfile(expanduser(token_file)) or force_new_token or token_expired(token_file):
+    if not isfile(token_file) or force_new_token or token_expired(token_file):
         create_os_token(token_file)
-    with open(expanduser(token_file), 'r') as f:
+    with open(token_file, 'r') as f:
         return json.load(f)['id']
 
 def query_accounting_api(token):
@@ -83,7 +87,6 @@ def write_resource_csv(resources, data_file):
         ]
     now = datetime.now(UTC).timestamp()
 
-    data_file = expanduser(data_file)
     # Create file and write headers if it doesn't exist
     if not isfile(data_file):
         with open(data_file, 'w') as f:
@@ -304,7 +307,7 @@ def main():
 
     if args['dump_csv']:
         dump = run(
-            ['cat', f'{expanduser(c['data_file'])}'],
+            ['cat', f'{c['data_file']}'],
             check=True
         )
 
