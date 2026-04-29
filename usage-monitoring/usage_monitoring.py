@@ -219,7 +219,10 @@ def usage_analysis(data,days_prior):
 
         # tot_sus - s1 = remaining_sus = r*(t2 - t1) --> t2 = remaining_sus/r + t1
         exhausted_ts = remaining_sus/r + cur_ts
-        exhausted_date = datetime.fromtimestamp(exhausted_ts)
+        try:
+            exhausted_date = datetime.fromtimestamp(exhausted_ts)
+        except OverflowError:
+            exhausted_date = None
 
         # s2 - s1 = r*(t2 - t1) --> s2 = r*(t2 - t1) + s1
         date_format = '%Y-%m-%d'
