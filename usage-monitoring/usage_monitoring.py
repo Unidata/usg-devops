@@ -50,7 +50,7 @@ def token_expired(token_file):
         date_format = '%Y-%m-%dT%H:%M:%S+0000'
         expire = datetime.strptime(expires_str, date_format).timestamp()
         now = datetime.now(UTC).timestamp()
-        expire < now    
+        return expire < now
 
 def get_os_token(token_file, force_new_token=False):
     if not isfile(token_file) or force_new_token or token_expired(token_file):
