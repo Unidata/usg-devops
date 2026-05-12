@@ -8,7 +8,7 @@ ENV GOSU_URL="https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/g
     HOME=/home/openstack \
     PATH=/home/openstack/bin:$PATH
 
-RUN mkdir -p /home/openstack/bin
+RUN mkdir -p /home/openstack/bin /home/openstack/.config/nushell
 COPY .bashrc /home/openstack/
 COPY requirements.txt /tmp/requirements.txt
 
@@ -20,10 +20,17 @@ gpgcheck=1\n\
 repo_gpgcheck=0\n\
 gpgkey=https://pkgs.k8s.io/core:/stable:/v${KUBECTL_VERSION}/rpm/repodata/repomd.xml.key\n" \
     > /etc/yum.repos.d/kubernetes.repo && \
+printf "[gemfury-nushell] \n\
+name=Gemfury Nushell Repo \n\
+baseurl=https://yum.fury.io/nushell/ \n\
+enabled=1 \n\
+gpgcheck=0 \n\
+gpgkey=https://yum.fury.io/nushell/gpg.key" \
+    | tee /etc/yum.repos.d/fury-nushell.repo &&  \
     dnf -y update && dnf install -y epel-release && \
     dnf install -y man-db man-pages vim nano git wget unzip ncurses procps-ng \
     htop python3 telnet openssh openssh-clients openssl findutils diffutils \
-    vi less kubectl python3-pip rsync jq && \
+    vi less kubectl python3-pip rsync jq nushell && \
     dnf clean all && rm -rf /var/cache/dnf && \
     # gosu install start
     curl -fsSL $GOSU_URL -o /usr/local/bin/gosu && \
@@ -50,6 +57,7 @@ gpgkey=https://pkgs.k8s.io/core:/stable:/v${KUBECTL_VERSION}/rpm/repodata/repomd
 
 WORKDIR /home/openstack
 
+COPY nu /home/openstack/.config/nushell
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
