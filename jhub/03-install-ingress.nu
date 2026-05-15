@@ -17,6 +17,7 @@ helm upgrade --install traefik traefik/traefik
   --set 'providers.kubernetesCRD.enabled=false'
   --set 'logs.access.enabled=true'
   --set 'nodeSelector.capi\.stackhpc\.com/node-group=default-worker'
+  --wait
 )
 | complete
 | if $in.exit_code != 0 {
