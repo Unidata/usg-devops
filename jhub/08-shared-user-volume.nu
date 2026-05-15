@@ -11,7 +11,7 @@ source ./env.nu
 let cluster = $env.jupyterhub.cluster
 let shared_volume = $env.jupyterhub.shared_volume
 
-let size = $shared_volume.home_size + $shared_volume.data_size
+let size = $shared_volume.home_size + ($shared_volume.data_size? | default 0)
 
 print $"[ INFO ] Configuring jupyterhub-home-nfs volume of size ($size) GB"
 
