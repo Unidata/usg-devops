@@ -28,7 +28,7 @@ gpgcheck=0 \n\
 gpgkey=https://yum.fury.io/nushell/gpg.key" \
     | tee /etc/yum.repos.d/fury-nushell.repo &&  \
     dnf -y update && dnf install -y epel-release && \
-    dnf install -y man-db man-pages vim nano git wget unzip ncurses procps-ng \
+    dnf install -y man-db man-pages vim nano git wget unzip bind-utils ncurses procps-ng \
     htop python3 telnet openssh openssh-clients openssl findutils diffutils \
     vi less kubectl python3-pip rsync jq nushell && \
     dnf clean all && rm -rf /var/cache/dnf && \
