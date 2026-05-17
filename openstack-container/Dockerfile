@@ -9,7 +9,7 @@ ENV GOSU_URL="https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/g
     PATH=/home/openstack/bin:$PATH
 
 RUN mkdir -p /home/openstack/bin /home/openstack/.config/nushell
-COPY .bashrc /home/openstack/
+COPY openstack.bashrc /home/openstack/.bashrc
 COPY requirements.txt /tmp/requirements.txt
 
 RUN printf "[kubernetes]\n\
