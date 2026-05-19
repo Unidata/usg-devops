@@ -3,7 +3,8 @@
 # Anything with a "SET ME!" comment *must* be set
 
 $env.jupyterhub.cluster = {
-  template: "kubernetes-1-30-jammy",
+  # https://github.com/zonca/jupyterhub-deploy-kubernetes-jetstream/issues/104
+  template: "kubernetes-1-33-jammy-fixed-labels",
   master: {count: 1, flavor: "m3.quad"},
   worker: {count: 1, flavor: "m3.quad"},
   autoscaling: "true",
