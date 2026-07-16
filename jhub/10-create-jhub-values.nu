@@ -230,8 +230,8 @@ let proxy = {
 
 let ingress = {
   enabled: true,
+  ingressClassName: "traefik",
   annotations: {
-    "kubernetes.io/ingress.class": "traefik",
     "cert-manager.io/cluster-issuer": "letsencrypt",
     "traefik.ingress.kubernetes.io/middlewares.limit.buffering.maxRequestBodyBytes": "500000000"
   },
