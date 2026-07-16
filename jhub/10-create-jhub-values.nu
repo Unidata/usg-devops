@@ -37,7 +37,7 @@ let jhub_admins = $jhub.admins
 let cluster_name = $env.jupyterhub.cluster.name
 let image_name = $jhub.image_name | default $"unidata/($env.jupyterhub.cluster.name)"
 let image_tag = $jhub.image_tag
-let git_repos = $jhub.git_repos
+let git_repos = ($jhub.git_repos? | default [])
 
 let user_placeholders = if ($jhub.user_placeholders | describe) != nothing {
   $jhub.user_placeholders
