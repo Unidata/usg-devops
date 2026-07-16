@@ -29,11 +29,17 @@ RUN apt update && apt upgrade -y && \
     chmod +x /usr/local/bin/gosu
     # gosu install end
 
+USER openstack
+
 # Begin image-builder
 WORKDIR /home/openstack
 RUN git clone $IMAGE_BUILDER && \
     cd image-builder/images/capi/ && \
     make deps-openstack
+
+# $HOME/.local/bin is the ansible install path
+# $HOME/image-builder/images/capi/.local/bin is the packer install path
+ENV PATH=$HOME/.local/bin:$HOME/image-builder/images/capi/.local/bin:$PATH
 # End image-builder
     
 COPY entrypoint.sh /
