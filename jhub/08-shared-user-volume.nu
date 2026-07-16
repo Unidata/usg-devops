@@ -11,7 +11,15 @@ source ./env.nu
 let cluster = $env.jupyterhub.cluster
 let shared_volume = $env.jupyterhub.shared_volume
 
-let size = $shared_volume.home_size + ($shared_volume.data_size? | default 0)
+let size = ($shared_volume.home_size | default 0) + ($shared_volume.data_size? | default 0)
+
+if $size == 0 {
+  print "[ INFO ] No home directory size or shared data size configured in env.nu"
+  print $"[ INFO ] home_size = ($shared_volume.home_size)"
+  print $"[ INFO ] data_size = ($shared_volume.data_size)"
+  print "[ INFO ] Skipping creation of shared user volume"
+  exit 0
+}
 
 print $"[ INFO ] Configuring jupyterhub-home-nfs volume of size ($size) GB"
 
