@@ -41,6 +41,8 @@ RUN git clone $IMAGE_BUILDER && \
 # $HOME/image-builder/images/capi/.local/bin is the packer install path
 ENV PATH=$HOME/.local/bin:$HOME/image-builder/images/capi/.local/bin:$PATH
 # End image-builder
+
+WORKDIR /home/openstack/image-builder/images/capi
     
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
