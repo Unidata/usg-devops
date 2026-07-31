@@ -26,8 +26,10 @@ RUN apt update && apt upgrade -y && \
     gpg --batch --verify /tmp/gosu.asc /usr/local/bin/gosu && \
     gpgconf --kill all && \
     rm -rf "$GNUPGHOME" /tmp/gosu.asc && \
-    chmod +x /usr/local/bin/gosu
+    chmod +x /usr/local/bin/gosu && \
     # gosu install end
+    useradd openstack && \
+    chown -R openstack /home/openstack
 
 USER openstack
 
@@ -44,8 +46,7 @@ ENV PATH=$HOME/.local/bin:$HOME/image-builder/images/capi/.local/bin:$PATH
 
 WORKDIR /home/openstack/image-builder/images/capi
     
-COPY entrypoint.sh /
-RUN chmod +x /entrypoint.sh
+COPY --chmod=+x entrypoint.sh /
 
 # Start container
 ENTRYPOINT ["/entrypoint.sh"]

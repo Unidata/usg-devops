@@ -1,19 +1,31 @@
 usage () {
 cat <<USAGE
 Usage: export or set environment variables when running
-Usage: Only OPENRC_PATH is necessary
+Usage: Only OPENRC_PATH, SOURCE_IMAGE, and NETWORK are necessary
 Usage: See source for all available options
-OPENRC_PATH=/path/to/openrc.sh \
-  OTHER_VAR=value \
-  ... \
-  $0
+OPENRC_PATH=/path/to/openrc.sh \\
+SOURCE_IMAGE=UUID \\
+NETWORK=UUID \\
+$0
 USAGE
 }
 
 TAG=${TAG:-latest}
 
-SOURCE_IMAGE=$(openstack image show Featured-Minimal-Ubuntu22 -f value -c id)
-NETWORK=${NETWORK:-$(openstack network show auto_allocated_network -f value -c id)}
+# SOURCE_IMAGE=$(openstack image show Featured-Minimal-Ubuntu22 -f value -c id)
+# NETWORK=${NETWORK:-$(openstack network show auto_allocated_network -f value -c id)}
+
+if [[ -z "$SOURCE_IMAGE" ]]; then
+  echo "!!! ERROR: Must provide a SOURCE_IMAGE"
+  usage
+  exit 1
+fi
+if [[ -z "$NETWORK" ]]; then
+  echo "!!! ERROR: Must provide a NETWORK"
+  usage
+  exit 1
+fi
+
 FLAVOR=${FLAVOR:-m3.quad}
 
 IMAGE_NAME_BASE=${IMAGE_NAME_BASE:-unidata-ubuntu-magnum}
@@ -77,7 +89,7 @@ docker run -t \
   -e PACKER_LOG=1 \
   -e PACKER_LOG_PATH=/image-builder-log/packer_debug.log \
   -e PACKER_VAR_FILES=/image-builder-log/var_file.json \
-  --env-file $OPENRC_FILE \
+  --env-file $OPENRC_PATH \
   -v $LOG_DIR:/image-builder-log \
   -v $ROLES_DIR:/home/openstack/image-builder/images/capi/ansible/roles/$NODE_CUSTOM_ROLES_POST \
   -v $KEY_FILE:/home/openstack/.ssh/id_ed25519_packer \
