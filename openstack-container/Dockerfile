@@ -31,7 +31,7 @@ gpgkey=https://yum.fury.io/nushell/gpg.key" \
     dnf -y update && dnf install -y epel-release && \
     dnf install -y man-db man-pages vim nano git wget unzip bind-utils gawk ncurses procps-ng \
     htop python3 telnet openssh openssh-clients openssl findutils diffutils \
-    vi less kubectl python3-pip rsync jq nushell && \
+    vi less kubectl python3-pip rsync jq nushell nmap-ncat iproute traceroute iputils && \
     dnf clean all && rm -rf /var/cache/dnf && \
     # gosu install start
     curl -fsSL $GOSU_URL -o /usr/local/bin/gosu && \
