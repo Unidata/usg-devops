@@ -23,24 +23,29 @@ print $"[ INFO ] Creating nodegroup ($nodegroup.name)"
 # Wait for nodegroup creation, or error on timeout
 let timeout = 10min
 let start = date now
-let check_status = {|| (openstack coe nodegroup show $cluster_name $nodegroup.name -f yaml | from yaml).status }
+let check_status = {||
+  (openstack coe nodegroup show $cluster_name $nodegroup.name -f yaml | from yaml).status
+}
+
 mut ready = false
-mut status = null
+mut status: string = ""
 
 print $"[ INFO ] Wait for nodegroup creation with timeout ($timeout)"
 
 while not $ready and ((date now) - $start) < $timeout {
   $status = do $check_status
   $ready = $status == "CREATE_COMPLETE"
+
   if $status == "CREATE_FAILED" {
-    print "[ ERROR ] Nodegroup creation failed!";
+    print "[ ERROR ] Nodegroup creation failed!"
     break
   }
-  print $"[ INFO ] Time elapsed: ((date now) - $start)"
+
+  print $"[ INFO ] Status: ($status); time elapsed: ((date now) - $start)"
   sleep 30sec
 }
 
 if not $ready {
-  print $"[ [ ERROR ] Failed to create healthy nodegroup in ($timeout)"
+  print $"[ ERROR ] Failed to create healthy nodegroup in ($timeout)"
   exit 1
 }
