@@ -28,20 +28,25 @@ print $"[ INFO ] Creating cluster: ($cluster.name)"
 # Wait for cluster creation, or error on timeout
 let timeout = 20min
 let start = date now
-let check_status = {|| (openstack coe cluster show $cluster.name -f yaml | from yaml).status }
+let check_status = {||
+  (openstack coe cluster show $cluster.name -f yaml | from yaml).status
+}
+
 mut ready = false
-mut status = null
+mut status: string = ""
 
 print $"[ INFO ] Waiting for cluster creation with timeout ($timeout)"
 
 while not $ready and ((date now) - $start) < $timeout {
   $status = do $check_status
   $ready = $status == "CREATE_COMPLETE"
-  if status == "CREATE_FAILED" {
-    print "[ ERROR ] Cluster creation failed!";
+
+  if $status == "CREATE_FAILED" {
+    print "[ ERROR ] Cluster creation failed!"
     break
   }
-  print $"[ INFO ] Time elapsed ((date now) - $start)"
+
+  print $"[ INFO ] Status: ($status); time elapsed: ((date now) - $start)"
   sleep 30sec
 }
 

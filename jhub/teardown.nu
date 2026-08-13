@@ -26,7 +26,7 @@ def main [
   let values_nfs = $env.jupyterhub.shared_volume.values_path
   let home_volume_id = (open $values_nfs | get -o openstack.volumeId)
 
-  def run [cmd: string, dry_run: bool] {
+  def run-cmd [cmd: string, dry_run: bool] {
     if $dry_run {
       print $"[ DRY RUN ] ($cmd)"
     } else {
@@ -71,20 +71,20 @@ def main [
   print $"[ INFO ] Cluster: ($cluster)"
   print $"[ INFO ] DNS record: ($fqdn)"
 
-  run "kubectl get pv -A | tail -n +2 | cut -f 1 -d ' ' > /tmp/pv.out" $dry_run
-  run "openstack volume list | grep -f /tmp/pv.out || true" $dry_run
+  run-cmd "kubectl get pv -A | tail -n +2 | cut -f 1 -d ' ' > /tmp/pv.out" $dry_run
+  run-cmd "openstack volume list | grep -f /tmp/pv.out || true" $dry_run
 
-  run $"openstack coe cluster delete ($cluster)" $dry_run
+  run-cmd $"openstack coe cluster delete ($cluster)" $dry_run
   wait-for-cluster-delete $cluster $dry_run $timeout
 
   print $"[ INFO ] After cluster deletion completes for ($cluster), verify PV-backed volumes:"
-  run "openstack volume list | grep -f /tmp/pv.out || true" $dry_run
+  run-cmd "openstack volume list | grep -f /tmp/pv.out || true" $dry_run
 
-  run $"openstack recordset delete ($zone) ($fqdn)" $dry_run
+  run-cmd $"openstack recordset delete ($zone) ($fqdn)" $dry_run
 
   if $home_volume_id != null {
     if $delete_home_volume {
-      run $"openstack volume delete ($home_volume_id)" $dry_run
+      run-cmd $"openstack volume delete ($home_volume_id)" $dry_run
     } else {
       print $"[ WARN ] Preserving home NFS volume: ($home_volume_id)"
       print $"[ INFO ] Delete manually with: openstack volume delete ($home_volume_id)"
