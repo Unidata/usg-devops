@@ -4,8 +4,8 @@ source ./env.nu
 touch $env.jupyterhub.secrets
 open $env.jupyterhub.secrets
 | try {from yaml} catch { {} } # If file empty, initialize empty record
-| upsert hub.cookieSecret (random binary 32 | encode hex | str downcase)
-| upsert proxy.secretToken (random binary 32 | encode hex | str downcase)
+| upsert hub.cookieSecret (random binary 32 | encode hex | str  lowercase)
+| upsert proxy.secretToken (random binary 32 | encode hex | str lowercase)
 | save -f $env.jupyterhub.secrets
 
 # Add Oauth callback URL in authentication.yaml
