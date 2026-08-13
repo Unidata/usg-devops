@@ -4,7 +4,7 @@
 
 $env.jupyterhub.cluster = {
   # https://github.com/zonca/jupyterhub-deploy-kubernetes-jetstream/issues/104
-  template: "unidata-ubuntu2204-k8s1.36.1",
+  template: "unidata-ubuntu2204-k8s1.36.1-20260720",
   master: {count: 1, flavor: "m3.quad"},
   worker: {count: 1, flavor: "m3.quad"},
   autoscaling: "true",
