@@ -18,9 +18,9 @@
 # Constants
 ####################
 
-let idv_sidecar_name = "docker.io/unidata/cave-idv-sidecar"
-let idv_sidecar_tag = "2025Aug14_201214_7e09"
-let idv_sidecar = $"($idv_sidecar_name):($idv_sidecar_tag)"
+let unidata_desktop_sidecar_name = "docker.io/unidata/unidata-desktop-sidecar"
+let unidata_desktop_sidecar_tag = "2026Jan16_212906_a785"
+let unidata_desktop_sidecar = $"($unidata_desktop_sidecar_name):($unidata_desktop_sidecar_tag)"
 
 ####################
 # Load from env.nu file
@@ -91,8 +91,8 @@ let resources = {
 }
 
 let extraContainers = [{
-  name: cave-idv-sidecar
-  image: $idv_sidecar
+  name: unidata-desktop-sidecar
+  image: $unidata_desktop_sidecar
   volume_mounts: $volume_mounts,
   ports: [{containerPort: 6080, name: "novnc" }]
   resources: {
@@ -146,8 +146,8 @@ let profileList = {
       node_selector: { capi.stackhpc.com/node-group: mediums }
     }
   }
-  "IDV": {
-    display_name: "Virtual Desktop: Run IDV & CAVE"
+  "Unidata Desktop": {
+    display_name: "Virtual Desktop: Run IDV & AWIPS CAVE"
     description: "Jupyter: 3 GB of memory; 1 vCPUS, IDV/CAVE: 21 GB of memory; 6 vCPUS"
     kubespawner_override: {
       mem_guarantee: 3G
