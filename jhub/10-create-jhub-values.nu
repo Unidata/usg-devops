@@ -19,7 +19,7 @@
 ####################
 
 let unidata_desktop_sidecar_name = "docker.io/unidata/unidata-desktop-sidecar"
-let unidata_desktop_sidecar_tag = "2026Jan16_212906_a785"
+let unidata_desktop_sidecar_tag = "2026Aug19_205357_1e67"
 let unidata_desktop_sidecar = $"($unidata_desktop_sidecar_name):($unidata_desktop_sidecar_tag)"
 
 ####################
