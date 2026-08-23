@@ -147,7 +147,7 @@ let profileList = {
     }
   }
   "Unidata Desktop": {
-    display_name: "Virtual Desktop: Run IDV & AWIPS CAVE"
+    display_name: "Unidata Desktop: Run IDV & AWIPS CAVE"
     description: "Jupyter: 3 GB of memory; 1 vCPUS, IDV/CAVE: 21 GB of memory; 6 vCPUS"
     kubespawner_override: {
       mem_guarantee: 3G
