@@ -104,7 +104,7 @@ let extraContainers = [{
 let profileList = {
   "Low": {
     display_name: "Low Power"
-    description: "Up to 1 CPU, 4GiB RAM"
+    description: "Up to 1 vCPU and 4 GiB RAM"
     kubespawner_override: {
       mem_guarantee: 2.875G
       mem_limit: 4G
@@ -115,7 +115,7 @@ let profileList = {
   },
   "Standard": {
     display_name: "Standard"
-    description: "Up to 2 CPU, 8GiB RAM"
+    description: "Up to 2 vCPUs and 8 GiB RAM"
     kubespawner_override: {
       mem_guarantee: 6.25G
       mem_limit: 8G
@@ -126,7 +126,7 @@ let profileList = {
   },
   "Medium": {
     display_name: "Medium Power"
-    description: "Up to 4 CPU, 16GiB RAM"
+    description: "Up to 4 vCPUs and 16 GiB RAM"
     kubespawner_override: {
       mem_guarantee: 13G
       mem_limit: 16G
@@ -137,7 +137,7 @@ let profileList = {
   }
   "High": {
     display_name: "High Power"
-    description: "Up to 8 CPU, 32GiB RAM"
+    description: "Up to 8 vCPUs and 32 GiB RAM"
     kubespawner_override: {
       mem_guarantee: 26.5G
       mem_limit: 32G
@@ -147,8 +147,8 @@ let profileList = {
     }
   }
   "Unidata Desktop": {
-    display_name: "Unidata Desktop: Run IDV & AWIPS CAVE"
-    description: "Jupyter: 3 GB of memory; 1 vCPUS, IDV/CAVE: 21 GB of memory; 6 vCPUS"
+    display_name: "Unidata Desktop: IDV & AWIPS CAVE"
+    description: "Jupyter: 1 vCPU and 3 GiB RAM; IDV/CAVE: 6 vCPUs and 21 GiB RAM"
     kubespawner_override: {
       mem_guarantee: 3G
       mem_limit: 3G
