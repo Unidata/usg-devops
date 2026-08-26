@@ -83,13 +83,21 @@ VAR_FILE
 )
 echo $VAR_FILE > $LOG_DIR/var_file.json
 
+source $OPENRC_PATH
+
 docker run -t \
   --name $IMAGE_NAME \
   -e IMAGE_NAME \
   -e PACKER_LOG=1 \
   -e PACKER_LOG_PATH=/image-builder-log/packer_debug.log \
   -e PACKER_VAR_FILES=/image-builder-log/var_file.json \
-  --env-file $OPENRC_PATH \
+  -e OS_AUTH_TYPE \
+  -e OS_AUTH_URL \
+  -e OS_IDENTITY_API_VERSION \
+  -e OS_REGION_NAME \
+  -e OS_INTERFACE \
+  -e OS_APPLICATION_CREDENTIAL_ID \
+  -e OS_APPLICATION_CREDENTIAL_SECRET \
   -v $LOG_DIR:/image-builder-log \
   -v $ROLES_DIR:/home/openstack/image-builder/images/capi/ansible/roles/$NODE_CUSTOM_ROLES_POST \
   -v $KEY_FILE:/home/openstack/.ssh/id_ed25519_packer \
