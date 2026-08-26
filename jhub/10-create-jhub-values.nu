@@ -203,6 +203,7 @@ let commands = [
 
 let hub = {
   config: {
+    Spawner: {http_timeout: 120},
     Authenticator: {
       admin_users: [
         ana-v-espinoza,
