@@ -2,23 +2,23 @@ usage () {
 cat <<USAGE
 ---------------------------------------------------------------------
 Usage:
-[ IMAGE_BUILDER_ENV="/path/to/env.sh" ] ./$0 \
-  --openrc-path                </path/to/openrc.sh> \
-  --source-image               <source-image-name-or-uuid> \
-  --network                    <network-name-or-uuid> \
-  [ --docker-image-tag ]       <image-tag> \
-  [ --source-image-flavor ]    <source-image-flavor> \
-  [ --image-name-base ]        <resulting-image-name-base> \
-  [ --image-name-suffix ]      <resulting-image-name-suffix> \
-  [ --ssh-username ]           <source-instance-ssh-username> \
-  [ --ssh-keypair-name ]       <openstack-keypair-name> \
-  [ --ssh-key-file ]           </path/to/private/key> \
-  [ --node-custom-roles-post ] <custom-role-name> \
+[ IMAGE_BUILDER_ENV="/path/to/env.sh" ] ./$0 \\
+  --openrc-path                </path/to/openrc.sh> \\
+  --source-image               <source-image-name-or-uuid> \\
+  --network                    <network-name-or-uuid> \\
+  [ --docker-image-tag ]       <image-tag> \\
+  [ --source-image-flavor ]    <source-image-flavor> \\
+  [ --image-name-base ]        <resulting-image-name-base> \\
+  [ --image-name-suffix ]      <resulting-image-name-suffix> \\
+  [ --ssh-username ]           <source-instance-ssh-username> \\
+  [ --ssh-keypair-name ]       <openstack-keypair-name> \\
+  [ --ssh-key-file ]           </path/to/private/key> \\
+  [ --node-custom-roles-post ] <custom-role-name> \\
   [ --help ]
 ---------------------------------------------------------------------
 Usage:
 Alternatively, create an env.sh setting the environment variables as in the example below:
-```
+########### env.sh ##########
 # Required arguments:
 OPENRC_PATH=
 SOURCE_IMAGE=
@@ -33,7 +33,7 @@ SSH_USERNAME=ubuntu
 SSH_KEYPAIR_NAME=packer
 SSH_KEY_FILE=~/.ssh/id_ed25519_packer
 NODE_CUSTOM_ROLES_POST=unidata-profile
-```
+########### env.sh ##########
 Then:
 [ IMAGE_BUILDER_ENV="/path/to/env.sh" ] ./$0 [ options ]
 
@@ -123,8 +123,7 @@ if [[ -z "$NETWORK" ]]; then
   usage
   exit 1
 fi
-export OPENRC_PATH \
-  SOURCE_IMAGE \
+export SOURCE_IMAGE \
   NETWORK \
   DOCKER_IMAGE_TAG=${DOCKER_IMAGE_TAG:-"latest"} \
   SOURCE_IMAGE_FLAVOR=${SOURCE_IMAGE_FLAVOR:-"m3.quad"} \
@@ -132,8 +131,11 @@ export OPENRC_PATH \
   IMAGE_NAME_SUFFIX=${IMAGE_NAME_SUFFIX:-"$(date +%Y%m%d_%H%M)"} \
   SSH_USERNAME=${SSH_USERNAME:-"ubuntu"} \
   SSH_KEYPAIR_NAME=${SSH_KEYPAIR_NAME:-"packer"} \
-  SSH_KEY_FILE=${SSH_KEY_FILE:-"~/.ssh/id_ed25519_packer"} \
   NODE_CUSTOM_ROLES_POST=${NODE_CUSTOM_ROLES_POST:-"unidata-profile"}
+
+# Ensure absolute paths are sent to the docker run command
+export OPENRC_PATH=$(realpath $OPENRC_PATH) \
+  SSH_KEY_FILE=$(realpath ${SSH_KEY_FILE:-~/.ssh/id_ed25519_packer})
 
 # Export "derived" variables
 # NOTE: If a NODE_CUSTOM_ROLES_POST isn't set, the resulting bind mount will mount an *empty or non-existent* $(pwd)/roles directory into the image-builder/images/capi/ansible/roles directory, breaking everything :)
@@ -161,6 +163,6 @@ docker run -t \
   -e SSH_KEY_FILE \
   -v $LOG_DIR:/image-builder-log \
   -v $ROLES_DIR:/home/openstack/image-builder/images/capi/ansible/roles/$NODE_CUSTOM_ROLES_POST \
-  -v $KEY_FILE:/home/openstack/.ssh/id_ed25519_packer \
+  -v $SSH_KEY_FILE:/home/openstack/.ssh/id_ed25519_packer \
   -v $OPENRC_PATH:/home/openstack/openrc.sh \
   unidata/image-builder:${DOCKER_IMAGE_TAG}
