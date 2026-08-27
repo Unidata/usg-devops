@@ -46,7 +46,7 @@ ENV PATH=$HOME/.local/bin:$HOME/image-builder/images/capi/.local/bin:$PATH
 
 WORKDIR /home/openstack/image-builder/images/capi
     
-COPY --chmod=+x entrypoint.sh /
+COPY --chmod=+x run.sh ./run.sh
 
 # Start container
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["run.sh"]
