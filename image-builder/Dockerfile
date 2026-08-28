@@ -31,6 +31,8 @@ RUN apt update && apt upgrade -y && \
     useradd openstack && \
     chown -R openstack /home/openstack
 
+RUN mkdir /image-builder-log && chown -R openstack /image-builder-log
+
 USER openstack
 
 # Begin image-builder
