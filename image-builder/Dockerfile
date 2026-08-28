@@ -49,4 +49,4 @@ WORKDIR /home/openstack/image-builder/images/capi
 COPY --chmod=+x run.sh ./run.sh
 
 # Start container
-ENTRYPOINT ["run.sh"]
+ENTRYPOINT ["/usr/bin/env", "bash", "run.sh"]
