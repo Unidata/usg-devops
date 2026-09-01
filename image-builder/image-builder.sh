@@ -161,6 +161,7 @@ docker run -t \
   -e SOURCE_IMAGE -e NETWORK -e SOURCE_IMAGE_FLAVOR \
   -e IMAGE_NAME -e SSH_USERNAME -e SSH_KEYPAIR_NAME \
   -e SSH_KEY_FILE \
+  -u $(id -u) \
   -v $LOG_DIR:/image-builder-log \
   -v $ROLES_DIR:/home/openstack/image-builder/images/capi/ansible/roles/$NODE_CUSTOM_ROLES_POST \
   -v $SSH_KEY_FILE:/home/openstack/.ssh/id_ed25519_packer \
