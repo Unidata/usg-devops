@@ -25,7 +25,7 @@ info "Running image builder" | log
 
 # Get UUIDs for the SOURCE_IMAGE and NETWORK
 SOURCE_IMAGE_UUID=$(openstack image show $SOURCE_IMAGE -f value -c id)
-NETWORK_UUID=$(openstack image show $NETWORK -f value -c id)
+NETWORK_UUID=$(openstack network show $NETWORK -f value -c id)
 info "SOURCE_IMAGE_UUID=$SOURCE_IMAGE_UUID" | log
 info "NETWORK_UUID=$NETWORK_UUID" | log
 
