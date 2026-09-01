@@ -27,7 +27,7 @@ info "Running image builder" | log
 info "Ensuring SOURCE_IMAGE, NETWORK, SOURCE_IMAGE_FLAVOR, and SSH_KEYPAIR_NAME are valid" | log
 SOURCE_IMAGE_UUID=$(openstack image show $SOURCE_IMAGE -f value -c id)
 NETWORK_UUID=$(openstack network show $NETWORK -f value -c id)
-SOURCE_IMAGE_FLAVOR=$(openstack flavor show $SOURCE_IMAGE_FLAVOR -f value -c name)
+SOURCE_IMAGE_FLAVOR=$(openstack flavor show $SOURCE_IMAGE_FLAVOR -f value -c name | grep -e "$SOURCE_IMAGE_FLAVOR")
 SSH_KEYPAIR_NAME=$(openstack keypair show $SSH_KEYPAIR_NAME -f value -c name)
 info "SOURCE_IMAGE_UUID=$SOURCE_IMAGE_UUID" | log
 info "NETWORK_UUID=$NETWORK_UUID" | log
