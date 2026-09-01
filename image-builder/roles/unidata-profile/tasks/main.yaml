@@ -1,0 +1,27 @@
+- name: Restrict ptrace_scope
+  ansible.posix.sysctl:
+    name: "kernel.yama.ptrace_scope"
+    value: 2
+    sysctl_file: /etc/sysctl.d/10-ptrace.conf
+- name: Unpack modprobe config files
+  ansible.builtin.unarchive:
+    src: ../files/security.tar
+    dest: /etc/modprobe.d
+    list_files: true
+
+- name: Check if nfs-common is needed
+  raw: which mount.nfs
+  register: need_nfs
+  failed_when: false
+  changed_when: false
+  # This command should always run, even in check mode
+  check_mode: false
+  tags:
+    - facts
+- name: Install nfs-common
+  raw:
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y nfs-common
+  become: true
+  when:
+    - need_nfs.rc != 0
