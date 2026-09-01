@@ -24,17 +24,15 @@ source /home/openstack/openrc.sh
 info "Running image builder" | log
 
 # Get UUIDs for the SOURCE_IMAGE and NETWORK
+info "Ensuring SOURCE_IMAGE, NETWORK, SOURCE_IMAGE_FLAVOR, and SSH_KEYPAIR_NAME are valid" | log
 SOURCE_IMAGE_UUID=$(openstack image show $SOURCE_IMAGE -f value -c id)
 NETWORK_UUID=$(openstack network show $NETWORK -f value -c id)
+SOURCE_IMAGE_FLAVOR=$(openstack flavor show $SOURCE_IMAGE_FLAVOR -f value -c name)
+SSH_KEYPAIR_NAME=$(openstack keypair show $SSH_KEYPAIR_NAME -f value -c name)
 info "SOURCE_IMAGE_UUID=$SOURCE_IMAGE_UUID" | log
 info "NETWORK_UUID=$NETWORK_UUID" | log
-
-# Ensure $FLAVOR and $KEYPAIR exist and are available to your openstack user
-info "Ensuring flavor $FLAVOR is a valid openstack flavor" | log
-openstack flavor show $FLAVOR -c name 2>&1 | log
-
-info "Ensuring keypair $SSH_KEYPAIR_NAME is a valid openstack keypair" | log
-openstack keypair show $SSH_KEYPAIR_NAME 2>&1 | log
+info "SOURCE_IMAGE_FLAVOR=$SOURCE_IMAGE_FLAVOR" | log
+info "SSH_KEYPAIR_NAME=$SSH_KEYPAIR_NAME" | log
 
 # Construct a packer var_file.json
 info "Creating $RUN_LOG_DIR/var_file.json" | log
@@ -42,7 +40,7 @@ VAR_FILE=$(cat <<VAR_FILE
 {
   "source_image": "$SOURCE_IMAGE_UUID",
   "networks": "$NETWORK_UUID",
-  "flavor": "$FLAVOR",
+  "flavor": "$SOURCE_IMAGE_FLAVOR",
   "floating_ip_network": "",
   "use_floating_ip": "false",
   "image_name": "$IMAGE_NAME",
